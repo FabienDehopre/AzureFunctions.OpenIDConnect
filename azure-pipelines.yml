@@ -106,12 +106,13 @@ stages:
         runOnce:
           deploy:
             steps:
-            - task: NuGetCommand@2
+            - task: DotNetCoreCLI@2
               inputs:
                 command: 'push'
                 packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg;!$(Pipeline.Workspace)/**/*.symbols.nupkg'
                 nuGetFeedType: 'internal'
                 publishVstsFeed: 'f66bbc19-e87f-48b6-bd80-3ab559e4a1bc'
+                arguments: '--api-key az'
             - task: GitHubRelease@1
               inputs:
                 gitHubConnection: 'github.com_FabienDehopre'
