@@ -1,0 +1,103 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  buildConfiguration: 'Release'
+
+stages:
+  - stage: build_pack
+    displayName: 'Build and pack project'
+    jobs:
+      - job: build
+        displayName: 'Build Project'
+        steps:
+          - task: gitversion/setup@0
+            displayName: 'Setup GitVersion'
+            inputs:
+              versionSpec: 5.x
+          - task: gitversion/execute@0
+            displayName: 'Determine the assembly version'
+            inputs:
+              updateAssemblyInfo: false
+              useConfigFile: true
+              configFilePath: 'GitVersion.yml'
+          - task: Assembly-Info-NetCore@2
+            displayName: 'Set Assembly Info'
+            inputs:
+              Path: '$(Build.SourcesDirectory)'
+              FileNames: 'AzureFunctions.OpenIDConnect/AzureFunctions.OpenIDConnect.csproj'
+              InsertAttributes: true
+              FileEncoding: 'auto'
+              WriteBOM: false
+              VersionNumber: '$(GitVersion.AssemblySemVer)'
+              FileVersionNumber: '$(GitVersion.AssemblySemFileVer)'
+              InformationalVersion: '$(GitVersion.InformationalVersion)'
+              PackageVersion: '$(GitVersion.FullSemVer)'
+              LogLevel: 'verbose'
+              FailOnWarning: false
+              DisableTelemetry: false
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'restore'
+              projects: '**/*.csproj'
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'test'
+              projects: 'AzureFunctions.OpenIDConnect.Tests/AzureFunctions.OpenIDConnect.Tests.csproj'
+              arguments: '--no-restore'
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'build'
+              projects: 'AzureFunctions.OpenIDConnect/AzureFunctions.OpenIDConnect.csproj'
+              arguments: '-p:Version=$(GitVersion.AssemblySemVer) --configuration $(buildConfiguration) --no-restore'
+          - task: CopyFiles@2
+            inputs:
+              SourceFolder: 'AzureFunctions.OpenIDConnect/bin/$(buildConfiguration)/net5.0'
+              TargetFolder: '$(Build.ArtifactStagingDirectory)/Binaries'
+              CleanTargetFolder: true
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'pack'
+              packagesToPack: 'AzureFunctions.OpenIDConnect/AzureFunctions.OpenIDConnect.csproj'
+              packDirectory: '$(Build.ArtifactStagingDirectory)/Nuget'
+              nobuild: true
+              includesymbols: true
+              includesource: true
+              versioningScheme: 'byEnvVar'
+              versionEnvVar: 'GitVersion.NuGetVersionV2'
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)/Nuget'
+              ArtifactName: 'Nuget'
+              publishLocation: 'Container'
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)/Binaries'
+              ArtifactName: 'Binaries'
+              publishLocation: 'Container'
+  - stage: deploy_to_nuget
+    displayName: 'Deploy to NuGet'
+    dependsOn: build_pack
+    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/head/main'))
+    jobs:
+    - deployment: nuget_deploy
+      displayName: 'Deploy to NuGet'
+      environment: 'Private Nuget'
+      strategy:
+       runOnce:
+         deploy:
+           steps:
+           - task: NuGetCommand@2
+             inputs:
+               command: 'push'
+               packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg;!$(Pipeline.Workspace)/**/*.symbols.nupkg'
+               nuGetFeedType: 'internal'
+               publishVstsFeed: 'f66bbc19-e87f-48b6-bd80-3ab559e4a1bc'
