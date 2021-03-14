@@ -4,7 +4,11 @@
 # https://aka.ms/yaml
 
 trigger:
-- main
+ batch: true
+ branches:
+  include:
+    - main
+    - refs/tags/*
 
 pool:
   vmImage: ubuntu-latest
@@ -45,25 +49,30 @@ stages:
               FailOnWarning: false
               DisableTelemetry: false
           - task: DotNetCoreCLI@2
+            displayName: 'Restore Dependencies'
             inputs:
               command: 'restore'
               projects: '**/*.csproj'
           - task: DotNetCoreCLI@2
+            displayName: 'Execute Tests'
             inputs:
               command: 'test'
               projects: 'AzureFunctions.OpenIDConnect.Tests/AzureFunctions.OpenIDConnect.Tests.csproj'
               arguments: '--no-restore'
           - task: DotNetCoreCLI@2
+            displayName: 'Build Library'
             inputs:
               command: 'build'
               projects: 'AzureFunctions.OpenIDConnect/AzureFunctions.OpenIDConnect.csproj'
               arguments: '-p:Version=$(GitVersion.AssemblySemVer) --configuration $(buildConfiguration) --no-restore'
           - task: CopyFiles@2
+            displayName: 'Copy binaries to staging directory'
             inputs:
               SourceFolder: 'AzureFunctions.OpenIDConnect/bin/$(buildConfiguration)/net5.0'
               TargetFolder: '$(Build.ArtifactStagingDirectory)/Binaries'
               CleanTargetFolder: true
           - task: DotNetCoreCLI@2
+            displayName: 'Pack library'
             inputs:
               command: 'pack'
               packagesToPack: 'AzureFunctions.OpenIDConnect/AzureFunctions.OpenIDConnect.csproj'
@@ -74,11 +83,13 @@ stages:
               versioningScheme: 'byEnvVar'
               versionEnvVar: 'GitVersion.NuGetVersionV2'
           - task: PublishBuildArtifacts@1
+            displayName: 'Publish Nuget Artifact'
             inputs:
               PathtoPublish: '$(Build.ArtifactStagingDirectory)/Nuget'
               ArtifactName: 'Nuget'
               publishLocation: 'Container'
           - task: PublishBuildArtifacts@1
+            displayName: 'Publish Binaries Artifact'
             inputs:
               PathtoPublish: '$(Build.ArtifactStagingDirectory)/Binaries'
               ArtifactName: 'Binaries'
