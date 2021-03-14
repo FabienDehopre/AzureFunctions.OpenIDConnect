@@ -1,8 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <Authors>Fabien Dehopré</Authors>
+    <Description>NuGet package to enable authorization via openid connect of Azure Functions</Description>
+    <PackageProjectUrl>https://github.com/FabienDehopre/AzureFunctions.OpenIDConnect</PackageProjectUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <RepositoryUrl>https://github.com/FabienDehopre/AzureFunctions.OpenIDConnect</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>auth0 openidconnect oauth2 azure functions authorization</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +19,13 @@
     <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="6.8.0" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="6.8.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
