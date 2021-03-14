@@ -110,8 +110,8 @@ stages:
               inputs:
                 command: 'push'
                 packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg;!$(Pipeline.Workspace)/**/*.symbols.nupkg'
-                nuGetFeedType: 'external'
-                externalEndPoint: 'FabienDehopre'
+                nuGetFeedType: 'internal'
+                publishVstsFeed: 'f66bbc19-e87f-48b6-bd80-3ab559e4a1bc'
             - task: GitHubRelease@1
               inputs:
                 gitHubConnection: 'github.com_FabienDehopre'
