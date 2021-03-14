@@ -97,7 +97,7 @@ stages:
   - stage: deploy_to_nuget
     displayName: 'Deploy to NuGet'
     dependsOn: build_pack
-    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/head/main'))
+    condition: succeeded()
     jobs:
     - deployment: nuget_deploy
       displayName: 'Deploy to NuGet'
