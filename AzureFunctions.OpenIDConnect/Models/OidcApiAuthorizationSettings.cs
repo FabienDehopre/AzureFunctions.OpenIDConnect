@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace AzureFunctions.OpenIDConnect.Models
 {
+    using System;
+
     /// <summary>
     /// Encapsulates settings used in OpenID Connect (OIDC) API authorization.
     /// </summary>
     public class OidcApiAuthorizationSettings
     {
-        private string _issuerUrl;
+        private string issuerUrl;
 
         /// <summary>
         /// Identifies the API to be authorized by the Open ID Connect provider (issuer).
@@ -38,19 +34,16 @@ namespace AzureFunctions.OpenIDConnect.Models
         /// </remarks>
         public string IssuerUrl
         {
-            get
-            {
-                return _issuerUrl;
-            }
+            get => this.issuerUrl;
             set
             {
-                if (!string.IsNullOrWhiteSpace(value) && !value.EndsWith("/"))
+                if (!string.IsNullOrWhiteSpace(value) && !value.EndsWith("/", StringComparison.OrdinalIgnoreCase))
                 {
-                    _issuerUrl = value + "/";
+                    this.issuerUrl = value + "/";
                 }
                 else
                 {
-                    _issuerUrl = value;
+                    this.issuerUrl = value;
                 }
             }
         }

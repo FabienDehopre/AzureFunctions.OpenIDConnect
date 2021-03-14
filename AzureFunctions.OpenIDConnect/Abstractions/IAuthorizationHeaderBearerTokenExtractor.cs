@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-
 namespace AzureFunctions.OpenIDConnect.Abstractions
 {
+    using Microsoft.AspNetCore.Http;
+
     public interface IAuthorizationHeaderBearerTokenExtractor
     {
         /// <summary>

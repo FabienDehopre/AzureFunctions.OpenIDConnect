@@ -1,35 +1,35 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using AzureFunctions.OpenIDConnect.Models;
-using AzureFunctions.OpenIDConnect.Tests.Fixtures;
-using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.Tokens;
-using Xunit;
-
 namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using AzureFunctions.OpenIDConnect.Models;
+    using AzureFunctions.OpenIDConnect.Tests.Fixtures;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.IdentityModel.Tokens;
+    using Xunit;
+
     public class AuthorizeAsyncTests
     {
         [Fact]
         public static async Task Retrys_once_if_SecurityTokenSignatureKeyNotFoundException()
         {
-            const string AudienceForTest = "AudienceForTest";
-            const string IssuerUrlForTest = "https://issuerUrl.for.test/";
-            const string ExtractedTokenForTest = "ExtractedTokenForTest";
+            const string audienceForTest = "AudienceForTest";
+            const string issuerUrlForTest = "https://issuerUrl.for.test/";
+            const string extractedTokenForTest = "ExtractedTokenForTest";
 
             var fakeApiAuthorizationSettingsOptions
                 = new FakeOptions<OidcApiAuthorizationSettings>()
                 {
                     Value = new OidcApiAuthorizationSettings()
                     {
-                        Audience = AudienceForTest,
-                        IssuerUrl = IssuerUrlForTest
+                        Audience = audienceForTest,
+                        IssuerUrl = issuerUrlForTest
                     }
                 };
 
             var fakeAuthorizationHeaderBearerTokenExractor = new FakeAuthorizationHeaderBearerTokenExractor()
             {
-                TokenToReturn = ExtractedTokenForTest
+                TokenToReturn = extractedTokenForTest
             };
 
             var fakeJwtSecurityTokenHandlerWrapper = new FakeJwtSecurityTokenHandlerWrapper()
@@ -50,7 +50,7 @@ namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
                 fakeJwtSecurityTokenHandlerWrapper,
                 fakeOidcConfigurationManager);
 
-            ApiAuthorizationResult result = await service.AuthorizeAsync(
+            var result = await service.AuthorizeAsync(
                 httpRequestHeaders);
 
             Assert.True(result.Success);
@@ -63,23 +63,23 @@ namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
         [Fact]
         public async Task Returns_failure_if_SecurityTokenSignatureKeyNotFoundException_on_retry()
         {
-            const string AudienceForTest = "AudienceForTest";
-            const string IssuerUrlForTest = "https://issuerUrl.for.test/";
-            const string ExtractedTokenForTest = "ExtractedTokenForTest";
+            const string audienceForTest = "AudienceForTest";
+            const string issuerUrlForTest = "https://issuerUrl.for.test/";
+            const string extractedTokenForTest = "ExtractedTokenForTest";
 
             var fakeApiAuthorizationSettingsOptions
                 = new FakeOptions<OidcApiAuthorizationSettings>()
                 {
                     Value = new OidcApiAuthorizationSettings()
                     {
-                        Audience = AudienceForTest,
-                        IssuerUrl = IssuerUrlForTest
+                        Audience = audienceForTest,
+                        IssuerUrl = issuerUrlForTest
                     }
                 };
 
             var fakeAuthorizationHeaderBearerTokenExractor = new FakeAuthorizationHeaderBearerTokenExractor()
             {
-                TokenToReturn = ExtractedTokenForTest
+                TokenToReturn = extractedTokenForTest
             };
 
             var fakeJwtSecurityTokenHandlerWrapper = new FakeJwtSecurityTokenHandlerWrapper()
@@ -101,8 +101,7 @@ namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
                 fakeJwtSecurityTokenHandlerWrapper,
                 fakeOidcConfigurationManager);
 
-            ApiAuthorizationResult result = await service.AuthorizeAsync(
-                httpRequestHeaders);
+            var result = await service.AuthorizeAsync(httpRequestHeaders);
 
             Assert.False(result.Success);
 
@@ -114,23 +113,23 @@ namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
         [Fact]
         public async Task Returns_failure_for_unauthorized_token()
         {
-            const string AudienceForTest = "AudienceForTest";
-            const string IssuerUrlForTest = "https://issuerUrl.for.test/";
-            const string ExtractedTokenForTest = "ExtractedTokenForTest";
+            const string audienceForTest = "AudienceForTest";
+            const string issuerUrlForTest = "https://issuerUrl.for.test/";
+            const string extractedTokenForTest = "ExtractedTokenForTest";
 
             var fakeApiAuthorizationSettingsOptions
                 = new FakeOptions<OidcApiAuthorizationSettings>()
                 {
                     Value = new OidcApiAuthorizationSettings()
                     {
-                        Audience = AudienceForTest,
-                        IssuerUrl = IssuerUrlForTest
+                        Audience = audienceForTest,
+                        IssuerUrl = issuerUrlForTest
                     }
                 };
 
             var fakeAuthorizationHeaderBearerTokenExractor = new FakeAuthorizationHeaderBearerTokenExractor()
             {
-                TokenToReturn = ExtractedTokenForTest
+                TokenToReturn = extractedTokenForTest
             };
 
             var fakeJwtSecurityTokenHandlerWrapper = new FakeJwtSecurityTokenHandlerWrapper()
@@ -152,7 +151,7 @@ namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
                 fakeJwtSecurityTokenHandlerWrapper,
                 fakeOidcConfigurationManager);
 
-            ApiAuthorizationResult result = await service.AuthorizeAsync(
+            var result = await service.AuthorizeAsync(
                 httpRequestHeaders);
 
             Assert.True(result.Failed);
@@ -165,16 +164,16 @@ namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
         [Fact]
         public async Task Returns_failure_if_bad_Aurthorization_header()
         {
-            const string AudienceForTest = "AudienceForTest";
-            const string IssuerUrlForTest = "https://issuerUrl.for.test/";
+            const string audienceForTest = "AudienceForTest";
+            const string issuerUrlForTest = "https://issuerUrl.for.test/";
 
             var fakeApiAuthorizationSettingsOptions
                 = new FakeOptions<OidcApiAuthorizationSettings>()
                 {
                     Value = new OidcApiAuthorizationSettings()
                     {
-                        Audience = AudienceForTest,
-                        IssuerUrl = IssuerUrlForTest
+                        Audience = audienceForTest,
+                        IssuerUrl = issuerUrlForTest
                     }
                 };
 
@@ -189,7 +188,7 @@ namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
                 jwtSecurityTokenHandlerWrapper: null, // Not accessed in this test.
                 oidcConfigurationManager: null); // Not accessed in this test.
 
-            ApiAuthorizationResult result = await service.AuthorizeAsync(
+            var result = await service.AuthorizeAsync(
                 httpRequestHeaders: null);
 
             Assert.True(result.Failed);
@@ -202,29 +201,29 @@ namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
         [Fact]
         public async Task Returns_failure_if_cant_get_signing_keys_from_issuer()
         {
-            const string AudienceForTest = "AudienceForTest";
-            const string IssuerUrlForTest = "https://issuerUrl.for.test/";
-            const string ExtractedTokenForTest = "ExtractedTokenForTest";
-            const string ExceptionMessageForTest = "ExceptionMessageForTest";
+            const string audienceForTest = "AudienceForTest";
+            const string issuerUrlForTest = "https://issuerUrl.for.test/";
+            const string extractedTokenForTest = "ExtractedTokenForTest";
+            const string exceptionMessageForTest = "ExceptionMessageForTest";
 
             var fakeApiAuthorizationSettingsOptions
                 = new FakeOptions<OidcApiAuthorizationSettings>()
                 {
                     Value = new OidcApiAuthorizationSettings()
                     {
-                        Audience = AudienceForTest,
-                        IssuerUrl = IssuerUrlForTest
+                        Audience = audienceForTest,
+                        IssuerUrl = issuerUrlForTest
                     }
                 };
 
             var fakeAuthorizationHeaderBearerTokenExractor = new FakeAuthorizationHeaderBearerTokenExractor()
             {
-                TokenToReturn = ExtractedTokenForTest
+                TokenToReturn = extractedTokenForTest
             };
 
             var fakeOidcConfigurationManager = new FakeOidcConfigurationManager()
             {
-                ExceptionMessageForTest = ExceptionMessageForTest,
+                ExceptionMessageForTest = exceptionMessageForTest,
             };
 
             IHeaderDictionary httpRequestHeaders = null;
@@ -235,7 +234,7 @@ namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
                 jwtSecurityTokenHandlerWrapper: null, // Not accessed in this test.
                 fakeOidcConfigurationManager);
 
-            ApiAuthorizationResult result = await service.AuthorizeAsync(
+            var result = await service.AuthorizeAsync(
                 httpRequestHeaders);
 
             Assert.True(result.Failed);
@@ -248,23 +247,23 @@ namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
         [Fact]
         public async Task Returns_success_for_happy_path()
         {
-            const string AudienceForTest = "AudienceForTest";
-            const string IssuerUrlForTest = "https://issuerUrl.for.test/";
-            const string ExtractedTokenForTest = "ExtractedTokenForTest";
+            const string audienceForTest = "AudienceForTest";
+            const string issuerUrlForTest = "https://issuerUrl.for.test/";
+            const string extractedTokenForTest = "ExtractedTokenForTest";
 
             var fakeApiAuthorizationSettingsOptions
                 = new FakeOptions<OidcApiAuthorizationSettings>()
                 {
                     Value = new OidcApiAuthorizationSettings()
                     {
-                        Audience = AudienceForTest,
-                        IssuerUrl = IssuerUrlForTest
+                        Audience = audienceForTest,
+                        IssuerUrl = issuerUrlForTest
                     }
                 };
 
             var fakeAuthorizationHeaderBearerTokenExractor = new FakeAuthorizationHeaderBearerTokenExractor()
             {
-                TokenToReturn = ExtractedTokenForTest
+                TokenToReturn = extractedTokenForTest
             };
 
             var fakeJwtSecurityTokenHandlerWrapper = new FakeJwtSecurityTokenHandlerWrapper();
@@ -282,8 +281,7 @@ namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
                 fakeJwtSecurityTokenHandlerWrapper,
                 fakeOidcConfigurationManager);
 
-            ApiAuthorizationResult result = await service.AuthorizeAsync(
-                httpRequestHeaders);
+            var result = await service.AuthorizeAsync(httpRequestHeaders);
 
             Assert.True(result.Success);
         }

@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.IdentityModel.Tokens;
-
 namespace AzureFunctions.OpenIDConnect.Abstractions
 {
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.IdentityModel.Tokens;
+
     public interface IOidcConfigurationManager
     {
         /// <summary>

@@ -1,32 +1,32 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
-using Xunit;
-
 namespace AzureFunctions.OpenIDConnect.Tests.AuthorizationHeaderBearerTokenExtractorTests
 {
+    using System.Collections.Generic;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Primitives;
+    using Xunit;
+
     public class GetTokenTests
     {
 
         [Fact]
         public void Doesnt_care_about_bEaRer_case()
         {
-            const string ExpectedToken = "some-token-value";
+            const string expectedToken = "some-token-value";
 
             var httpRequestHeaders = new HeaderDictionary()
             {
                 new KeyValuePair<string, StringValues>("header1", "header1value"),
-                new KeyValuePair<string, StringValues>("Authorization", $"bEaRer {ExpectedToken}"),
+                new KeyValuePair<string, StringValues>("Authorization", $"bEaRer {expectedToken}"),
                 new KeyValuePair<string, StringValues>("header3", "header3value")
             };
 
             var extractor = new AuthorizationHeaderBearerTokenExtractor();
 
-            string token = extractor.GetToken(httpRequestHeaders);
+            var token = extractor.GetToken(httpRequestHeaders);
 
             Assert.NotNull(token);
 
-            Assert.Equal(ExpectedToken, token);
+            Assert.Equal(expectedToken, token);
         }
 
         [Theory]
@@ -42,7 +42,7 @@ namespace AzureFunctions.OpenIDConnect.Tests.AuthorizationHeaderBearerTokenExtra
 
             var extractor = new AuthorizationHeaderBearerTokenExtractor();
 
-            string token = extractor.GetToken(httpRequestHeaders);
+            var token = extractor.GetToken(httpRequestHeaders);
 
             Assert.NotNull(token);
 
@@ -61,7 +61,7 @@ namespace AzureFunctions.OpenIDConnect.Tests.AuthorizationHeaderBearerTokenExtra
 
             var extractor = new AuthorizationHeaderBearerTokenExtractor();
 
-            string token = extractor.GetToken(httpRequestHeaders);
+            var token = extractor.GetToken(httpRequestHeaders);
 
             Assert.Null(token);
         }
@@ -83,7 +83,7 @@ namespace AzureFunctions.OpenIDConnect.Tests.AuthorizationHeaderBearerTokenExtra
 
             var extractor = new AuthorizationHeaderBearerTokenExtractor();
 
-            string token = extractor.GetToken(httpRequestHeaders);
+            var token = extractor.GetToken(httpRequestHeaders);
 
             Assert.Null(token);
         }
@@ -105,7 +105,7 @@ namespace AzureFunctions.OpenIDConnect.Tests.AuthorizationHeaderBearerTokenExtra
 
             var extractor = new AuthorizationHeaderBearerTokenExtractor();
 
-            string token = extractor.GetToken(httpRequestHeaders);
+            var token = extractor.GetToken(httpRequestHeaders);
 
             Assert.Null(token);
         }

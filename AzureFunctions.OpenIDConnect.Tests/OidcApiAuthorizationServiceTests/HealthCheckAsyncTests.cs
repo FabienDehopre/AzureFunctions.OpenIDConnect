@@ -1,13 +1,12 @@
-﻿using AzureFunctions.OpenIDConnect.Models;
-using AzureFunctions.OpenIDConnect.Tests.Fixtures;
-using Xunit;
-
 namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
 {
+    using AzureFunctions.OpenIDConnect.Models;
+    using AzureFunctions.OpenIDConnect.Tests.Fixtures;
+    using Xunit;
+
     public class HealthCheckAsyncTests
     {
-        private readonly string _expectedMissingSettingsMessage =
-            $"Some or all {nameof(OidcApiAuthorizationSettings)} are missing.";
+        private readonly string expectedMissingSettingsMessage = $"Some or all {nameof(OidcApiAuthorizationSettings)} are missing.";
 
         [Fact]
         public async void Returns_error_if_missing_options()
@@ -16,12 +15,12 @@ namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
                 null, // Options are missing.
                 authorizationHeaderBearerTokenExractor: null, // Not accessed in this test.
                 jwtSecurityTokenHandlerWrapper: null, // Not accessed in this test.
-                oidcConfigurationManager: null); ; // Not accessed in this test.
+                oidcConfigurationManager: null); // Not accessed in this test.
 
-            HealthCheckResult result = await service.HealthCheckAsync();
+            var result = await service.HealthCheckAsync();
 
             Assert.False(result.IsHealthy);
-            Assert.Equal(_expectedMissingSettingsMessage, result.BadHealthMessage);
+            Assert.Equal(this.expectedMissingSettingsMessage, result.BadHealthMessage);
         }
 
         [Fact]
@@ -37,12 +36,12 @@ namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
                 fakeApiAuthorizationSettingsOptions,
                 authorizationHeaderBearerTokenExractor: null, // Not accessed in this test.
                 jwtSecurityTokenHandlerWrapper: null, // Not accessed in this test.
-                oidcConfigurationManager: null); ; // Not accessed in this test.
+                oidcConfigurationManager: null); // Not accessed in this test.
 
-            HealthCheckResult result = await service.HealthCheckAsync();
+            var result = await service.HealthCheckAsync();
 
             Assert.False(result.IsHealthy);
-            Assert.Equal(_expectedMissingSettingsMessage, result.BadHealthMessage);
+            Assert.Equal(this.expectedMissingSettingsMessage, result.BadHealthMessage);
         }
 
         [Theory]
@@ -51,28 +50,27 @@ namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
         [InlineData(" ", " ")] // Spaces.
         [InlineData("someAudience", null)]
         [InlineData(null, "https://issuerUrl.for.test/")]
-        public async void Returns_error_if_missing_settings_values(string Audience, string issuerUrl)
+        public async void Returns_error_if_missing_settings_values(string audience, string issuerUrl)
         {
-            var fakeApiAuthorizationSettingsOptions
-                = new FakeOptions<OidcApiAuthorizationSettings>()
+            var fakeApiAuthorizationSettingsOptions = new FakeOptions<OidcApiAuthorizationSettings>()
+            {
+                Value = new OidcApiAuthorizationSettings()
                 {
-                    Value = new OidcApiAuthorizationSettings()
-                    {
-                        Audience = Audience,
-                        IssuerUrl = issuerUrl
-                    }
-                };
+                    Audience = audience,
+                    IssuerUrl = issuerUrl
+                }
+            };
 
             var service = new OidcApiAuthorizationService(
                 fakeApiAuthorizationSettingsOptions,
                 authorizationHeaderBearerTokenExractor: null, // Not accessed in this test.
                 jwtSecurityTokenHandlerWrapper: null, // Not accessed in this test.
-                oidcConfigurationManager: null); ; // Not accessed in this test.
+                oidcConfigurationManager: null); // Not accessed in this test.
 
-            HealthCheckResult result = await service.HealthCheckAsync();
+            var result = await service.HealthCheckAsync();
 
             Assert.False(result.IsHealthy);
-            Assert.Equal(_expectedMissingSettingsMessage, result.BadHealthMessage);
+            Assert.Equal(this.expectedMissingSettingsMessage, result.BadHealthMessage);
         }
 
         [Fact]
@@ -99,7 +97,7 @@ namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
                 jwtSecurityTokenHandlerWrapper: null, // Not accessed in this test.
                 fakeOidcConfigurationManager);
 
-            HealthCheckResult result = await service.HealthCheckAsync();
+            var result = await service.HealthCheckAsync();
 
             Assert.False(result.IsHealthy);
             Assert.StartsWith(
@@ -128,7 +126,7 @@ namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationServiceTests
                 jwtSecurityTokenHandlerWrapper: null, // Not accessed in this test.
                 fakeOidcConfigurationManager);
 
-            HealthCheckResult result = await service.HealthCheckAsync();
+            var result = await service.HealthCheckAsync();
 
             Assert.True(result.IsHealthy);
             Assert.Null(result.BadHealthMessage);

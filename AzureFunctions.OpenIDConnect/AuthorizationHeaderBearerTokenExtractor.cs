@@ -1,12 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Net.Http.Headers;
-using AzureFunctions.OpenIDConnect.Abstractions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
-
 namespace AzureFunctions.OpenIDConnect
 {
+    using System;
+    using System.Linq;
+    using System.Net.Http.Headers;
+    using AzureFunctions.OpenIDConnect.Abstractions;
+    using Microsoft.AspNetCore.Http;
+
     public class AuthorizationHeaderBearerTokenExtractor : IAuthorizationHeaderBearerTokenExtractor
     {
         /// <summary>
@@ -25,7 +24,7 @@ namespace AzureFunctions.OpenIDConnect
             // Get a StringValues object that represents the content of the Authorization header found in the given
             // headers.
             // Note that the default for a IHeaderDictionary is a StringValues object with one null string.
-            StringValues rawAuthorizationHeaderValue = httpRequestHeaders
+            var rawAuthorizationHeaderValue = httpRequestHeaders
                 .SingleOrDefault(x => x.Key == "Authorization") // Case sensitive.
                 .Value;
 
@@ -38,15 +37,13 @@ namespace AzureFunctions.OpenIDConnect
 
             // We got a value from the Authorization header.
 
-            if (!AuthenticationHeaderValue.TryParse(
-                    rawAuthorizationHeaderValue, // StringValues automatically convert to string.
-                    out AuthenticationHeaderValue authenticationHeaderValue))
+            if (!AuthenticationHeaderValue.TryParse(rawAuthorizationHeaderValue, out var authenticationHeaderValue))
             {
                 // Invalid token format.
                 return null;
             }
 
-            if (!string.Equals(authenticationHeaderValue.Scheme, "Bearer", StringComparison.InvariantCultureIgnoreCase)) // Case insenitive.
+            if (!string.Equals(authenticationHeaderValue.Scheme, "Bearer", StringComparison.OrdinalIgnoreCase)) // Case insenitive.
             {
                 // The Authorization header's value is not a Bearer token.
                 return null;

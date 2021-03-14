@@ -1,4 +1,4 @@
-﻿namespace AzureFunctions.OpenIDConnect.Models
+namespace AzureFunctions.OpenIDConnect.Models
 {
     public class HealthCheckResult
     {
@@ -15,12 +15,9 @@
         /// <param name="badHealthMessage">
         /// The message describing the bad health.
         /// </param>
-        public HealthCheckResult(string badHealthMessage)
-        {
-            BadHealthMessage = badHealthMessage;
-        }
+        public HealthCheckResult(string badHealthMessage) => this.BadHealthMessage = badHealthMessage;
 
-        public bool IsHealthy => BadHealthMessage == null;
+        public bool IsHealthy => this.BadHealthMessage == null;
 
         public string BadHealthMessage { get; set; }
     }

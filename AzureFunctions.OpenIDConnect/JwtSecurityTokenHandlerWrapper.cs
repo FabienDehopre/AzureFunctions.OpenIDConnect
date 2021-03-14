@@ -1,9 +1,9 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using AzureFunctions.OpenIDConnect.Abstractions;
-using Microsoft.IdentityModel.Tokens;
-
 namespace AzureFunctions.OpenIDConnect
 {
+    using System.IdentityModel.Tokens.Jwt;
+    using AzureFunctions.OpenIDConnect.Abstractions;
+    using Microsoft.IdentityModel.Tokens;
+
     public class JwtSecurityTokenHandlerWrapper : IJwtSecurityTokenHandlerWrapper
     {
         /// <summary>
@@ -23,7 +23,7 @@ namespace AzureFunctions.OpenIDConnect
             // Try to validate the token.
             // Throws if the the token cannot be validated.
             // We don't need the ClaimsPrincipal that is returned.
-            handler.ValidateToken(token, tokenValidationParameters, out _); // Discard the output SecurityToken. We don't need it.
+            _ = handler.ValidateToken(token, tokenValidationParameters, out _); // Discard the output SecurityToken. We don't need it.
         }
     }
 }

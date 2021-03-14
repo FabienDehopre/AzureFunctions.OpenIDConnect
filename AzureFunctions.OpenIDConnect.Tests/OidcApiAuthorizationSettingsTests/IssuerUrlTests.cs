@@ -1,22 +1,22 @@
-﻿using AzureFunctions.OpenIDConnect.Models;
-using Xunit;
-
 namespace AzureFunctions.OpenIDConnect.Tests.OidcApiAuthorizationSettingsTests
 {
+    using AzureFunctions.OpenIDConnect.Models;
+    using Xunit;
+
     public class IssuerUrlTests
     {
         [Fact]
         public void Appends_missing_foward_slash()
         {
-            const string WithoutEndingSlash = "https://my.test.url";
-            const string WithEndingSlash = "https://my.test.url/";
+            const string withoutEndingSlash = "https://my.test.url";
+            const string withEndingSlash = "https://my.test.url/";
 
             var settings = new OidcApiAuthorizationSettings()
             {
-                IssuerUrl = WithoutEndingSlash
+                IssuerUrl = withoutEndingSlash
             };
 
-            Assert.Equal(WithEndingSlash, settings.IssuerUrl);
+            Assert.Equal(withEndingSlash, settings.IssuerUrl);
         }
 
         [Fact]

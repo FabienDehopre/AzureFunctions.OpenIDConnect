@@ -1,25 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using AzureFunctions.OpenIDConnect.Abstractions;
-using AzureFunctions.OpenIDConnect.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-
 namespace AzureFunctions.OpenIDConnect
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using AzureFunctions.OpenIDConnect.Abstractions;
+    using AzureFunctions.OpenIDConnect.Models;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Options;
+    using Microsoft.IdentityModel.Tokens;
+
     /// <summary>
     /// Encapsulates checks of OpenID Connect (OIDC) Authorization tokens in HTTP request headers.
     /// </summary>
     public class OidcApiAuthorizationService : IApiAuthorization
     {
-        private readonly IAuthorizationHeaderBearerTokenExtractor _authorizationHeaderBearerTokenExractor;
-        private readonly IJwtSecurityTokenHandlerWrapper _jwtSecurityTokenHandlerWrapper;
-        private readonly IOidcConfigurationManager _oidcConfigurationManager;
-        private readonly string _issuerUrl = null;
-        private readonly string _audience = null;
+        private readonly IAuthorizationHeaderBearerTokenExtractor authorizationHeaderBearerTokenExractor;
+        private readonly IJwtSecurityTokenHandlerWrapper jwtSecurityTokenHandlerWrapper;
+        private readonly IOidcConfigurationManager oidcConfigurationManager;
+        private readonly string issuerUrl;
+        private readonly string audience;
 
         public OidcApiAuthorizationService(
             IOptions<OidcApiAuthorizationSettings> apiAuthorizationSettingsOptions,
@@ -27,11 +27,11 @@ namespace AzureFunctions.OpenIDConnect
             IJwtSecurityTokenHandlerWrapper jwtSecurityTokenHandlerWrapper,
             IOidcConfigurationManager oidcConfigurationManager)
         {
-            _issuerUrl = apiAuthorizationSettingsOptions?.Value?.IssuerUrl;
-            _audience = apiAuthorizationSettingsOptions?.Value?.Audience;
-            _authorizationHeaderBearerTokenExractor = authorizationHeaderBearerTokenExractor;
-            _jwtSecurityTokenHandlerWrapper = jwtSecurityTokenHandlerWrapper;
-            _oidcConfigurationManager = oidcConfigurationManager;
+            this.issuerUrl = apiAuthorizationSettingsOptions?.Value?.IssuerUrl;
+            this.audience = apiAuthorizationSettingsOptions?.Value?.Audience;
+            this.authorizationHeaderBearerTokenExractor = authorizationHeaderBearerTokenExractor;
+            this.jwtSecurityTokenHandlerWrapper = jwtSecurityTokenHandlerWrapper;
+            this.oidcConfigurationManager = oidcConfigurationManager;
         }
 
         /// <summary>
@@ -46,14 +46,14 @@ namespace AzureFunctions.OpenIDConnect
         /// <param name="cancellationToken"></param>
         public async Task<ApiAuthorizationResult> AuthorizeAsync(IHeaderDictionary httpRequestHeaders, CancellationToken cancellationToken = default)
         {
-            string authorizationBearerToken = _authorizationHeaderBearerTokenExractor.GetToken(httpRequestHeaders);
+            var authorizationBearerToken = this.authorizationHeaderBearerTokenExractor.GetToken(httpRequestHeaders);
             if (authorizationBearerToken == null)
             {
                 return new ApiAuthorizationResult("Authorization header is missing, invalid format, or is not a Bearer token.");
             }
 
-            bool isTokenValid = false;
-            int validationRetryCount = 0;
+            var isTokenValid = false;
+            var validationRetryCount = 0;
             do
             {
                 IEnumerable<SecurityKey> isserSigningKeys;
@@ -64,7 +64,7 @@ namespace AzureFunctions.OpenIDConnect
                     // then a fresh set of signing keys are retrieved from the OpenID Connect provider
                     // (issuer) cached and returned.
                     // This method will throw if the configuration cannot be retrieved, instead of returning null.
-                    isserSigningKeys = await _oidcConfigurationManager.GetIssuerSigningKeysAsync(cancellationToken);
+                    isserSigningKeys = await this.oidcConfigurationManager.GetIssuerSigningKeysAsync(cancellationToken);
                 }
                 catch (Exception ex)
                 {
@@ -80,9 +80,9 @@ namespace AzureFunctions.OpenIDConnect
                     var tokenValidationParameters = new TokenValidationParameters
                     {
                         RequireSignedTokens = true,
-                        ValidAudience = _audience,
+                        ValidAudience = audience,
                         ValidateAudience = true,
-                        ValidIssuer = _issuerUrl,
+                        ValidIssuer = issuerUrl,
                         ValidateIssuer = true,
                         ValidateIssuerSigningKey = true,
                         ValidateLifetime = true,
@@ -92,7 +92,7 @@ namespace AzureFunctions.OpenIDConnect
                     try
                     {
                         // Throws if the the token cannot be validated.
-                        _jwtSecurityTokenHandlerWrapper.ValidateToken(authorizationBearerToken, tokenValidationParameters);
+                        this.jwtSecurityTokenHandlerWrapper.ValidateToken(authorizationBearerToken, tokenValidationParameters);
                         isTokenValid = true;
                     }
                     catch (SecurityTokenSignatureKeyNotFoundException)
@@ -109,7 +109,7 @@ namespace AzureFunctions.OpenIDConnect
                             // the next time we ask for them.
                             // Then we retry by asking for the signing keys and validating the token again.
                             // We only retry once.
-                            _oidcConfigurationManager.RequestRefresh();
+                            this.oidcConfigurationManager.RequestRefresh();
                             validationRetryCount++;
                         }
                         else
@@ -135,7 +135,7 @@ namespace AzureFunctions.OpenIDConnect
 
         public async Task<HealthCheckResult> HealthCheckAsync(CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(_audience) || string.IsNullOrWhiteSpace(_issuerUrl))
+            if (string.IsNullOrWhiteSpace(this.audience) || string.IsNullOrWhiteSpace(this.issuerUrl))
             {
                 return new HealthCheckResult($"Some or all {nameof(OidcApiAuthorizationSettings)} are missing.");
             }
@@ -143,8 +143,8 @@ namespace AzureFunctions.OpenIDConnect
             try
             {
                 // Get the singing keys fresh. Not from the cache.
-                _oidcConfigurationManager.RequestRefresh();
-                await _oidcConfigurationManager.GetIssuerSigningKeysAsync(cancellationToken);
+                this.oidcConfigurationManager.RequestRefresh();
+                _ = await this.oidcConfigurationManager.GetIssuerSigningKeysAsync(cancellationToken);
             }
             catch (Exception ex)
             {
