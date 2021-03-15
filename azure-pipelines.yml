@@ -106,7 +106,10 @@ stages:
         runOnce:
           deploy:
             steps:
-            - task: DotNetCoreCLI@2
+            - task: NuGetAuthenticate@0
+              inputs:
+               nuGetServiceConnections: ''
+            - task: NuGetCommand@2
               inputs:
                 command: 'push'
                 packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg;!$(Pipeline.Workspace)/**/*.symbols.nupkg'
