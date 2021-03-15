@@ -119,7 +119,7 @@ stages:
                 action: 'create'
                 target: '$(Build.SourceVersion)'
                 tagSource: 'gitTag'
-                tagPattern: 'v?\\d+\\.\\d+\\.\\d+'
+                tagPattern: 'v?\d+\.\d+\.\d+'
                 assets: '$(Pipeline.Workspace)/**/*.nupkg'
                 changeLogCompareToRelease: 'lastFullRelease'
                 changeLogType: 'commitBased'
